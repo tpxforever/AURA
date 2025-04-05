@@ -1,4 +1,5 @@
 import google.generativeai as genai
+import json
 import os
 from flask_sqlalchemy import SQLAlchemy
 from flask import Flask, request, jsonify, render_template
@@ -41,6 +42,24 @@ def generate_dialogue():
         text = f"[Gemini Error] {str(e)}"
 
     return jsonify({"response": text})
+
+SETTINGS_FILE = "user_settings.json"
+
+@app.route("/api/settings", methods=["POST"])
+def save_settings():
+    config = request.get_json()
+    with open(SETTINGS_FILE, "w") as f:
+        json.dump(config, f)
+    return jsonify({"status": "saved", "config": config})
+
+@app.route("/api/settings", methods=["GET"])
+def load_settings():
+    if not os.path.exists(SETTINGS_FILE):
+        return jsonify({"error": "No settings found"}), 404
+    with open(SETTINGS_FILE, "r") as f:
+        config = json.load(f)
+    return jsonify(config)
+
 
 
 if __name__ == '__main__':
