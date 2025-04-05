@@ -8,31 +8,66 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
+# ------------------------------
+# Database Configuration
+# ------------------------------
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///user_settings.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(app)
+
+# ------------------------------
+# Model Definition
+# ------------------------------
+class UserSettings(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    empathy = db.Column(db.Integer, default=50)
+    humor = db.Column(db.Integer, default=50)
+    honesty = db.Column(db.Integer, default=50)
+    sarcasm = db.Column(db.Integer, default=50)
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "empathy": self.empathy,
+            "humor": self.humor,
+            "honesty": self.honesty,
+            "sarcasm": self.sarcasm
+        }
+
+# ------------------------------
+# Gemini API Setup
+# ------------------------------
+GEMINI_API_KEY = "AIzaSyClR-zfEQ9m8DkhemP2elrUgJOckSXYX8U"
+genai.configure(api_key=GEMINI_API_KEY)
+model = genai.GenerativeModel("gemini-pro")
+
+# ------------------------------
+# Routes
+# ------------------------------
 @app.route("/")
 def home():
     return render_template("home.html")
 
-
-# Set this to your actual Gemini API key (store in env var ideally)
-GEMINI_API_KEY = "AIzaSyClR-zfEQ9m8DkhemP2elrUgJOckSXYX8U"
-genai.configure(api_key=GEMINI_API_KEY)
-
-model = genai.GenerativeModel("gemini-pro")
+@app.route("/main")
+def main():
+    return render_template("main.html")  # main app UI
 
 @app.route("/api/dialogue", methods=["POST"])
 def generate_dialogue():
     config = request.get_json()
-    tone = config.get("tone", "friendly")
-    formality = config.get("formality", "casual")
-    proactivity = config.get("proactivity", 5)
+    empathy = config.get("empathy", 50)
+    humor = config.get("humor", 50)
+    honesty = config.get("honesty", 50)
+    sarcasm = config.get("sarcasm", 50)
 
     prompt = f"""
-    Act as a home assistant robot with this personality:
-    - Tone: {tone}
-    - Formality: {formality}
-    - Proactivity level: {proactivity}/10
+    Act as a home assistant robot with this personality configuration:
+    - Empathy: {empathy}%
+    - Humor: {humor}%
+    - Honesty: {honesty}%
+    - Sarcasm: {sarcasm}%
 
-    Say a default greeting to the user.
+    Greet the user according to these personality traits.
     """
 
     try:
@@ -43,26 +78,36 @@ def generate_dialogue():
 
     return jsonify({"response": text})
 
-SETTINGS_FILE = "user_settings.json"
 
 @app.route("/api/settings", methods=["POST"])
 def save_settings():
-    config = request.get_json()
-    with open(SETTINGS_FILE, "w") as f:
-        json.dump(config, f)
-    return jsonify({"status": "saved", "config": config})
+    data = request.get_json()
+
+    settings = UserSettings(
+        empathy=data.get("empathy", 50),
+        humor=data.get("humor", 50),
+        honesty=data.get("honesty", 50),
+        sarcasm=data.get("sarcasm", 50),
+    )
+    db.session.add(settings)
+    db.session.commit()
+
+    return jsonify({"status": "saved", "config": settings.to_dict()})
+
 
 @app.route("/api/settings", methods=["GET"])
 def load_settings():
-    if not os.path.exists(SETTINGS_FILE):
+    settings = UserSettings.query.order_by(UserSettings.id.desc()).first()
+    if settings:
+        return jsonify(settings.to_dict())
+    else:
         return jsonify({"error": "No settings found"}), 404
-    with open(SETTINGS_FILE, "r") as f:
-        config = json.load(f)
-    return jsonify(config)
 
-@app.route("/main")
-def main_page():
-    return render_template("main.html")
 
+# ------------------------------
+# App Entry Point
+# ------------------------------
 if __name__ == '__main__':
+    with app.app_context():
+        db.create_all()
     app.run(debug=True)

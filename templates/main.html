@@ -1,14 +1,75 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AURA</title>
-    <link rel="stylesheet" href="./static/mainstyle.css">
+  <meta charset="UTF-8">
+  <title>AI Personality Settings</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='home_page_style.css') }}">
 </head>
 <body>
-    <div class="bar">
-        <h1 id="Logo">AURA</h1>
+  <div class="container">
+    <h2>Customize Your AI Assistant</h2>
+
+    <div class="slider-container">
+      <label for="empathy">Empathy</label>
+      <input type="range" id="empathy" min="0" max="100" value="50" oninput="updateValue('empathy')">
+      <div class="value" id="empathy-value">50%</div>
     </div>
+
+    <div class="slider-container">
+      <label for="humor">Humor</label>
+      <input type="range" id="humor" min="0" max="100" value="50" oninput="updateValue('humor')">
+      <div class="value" id="humor-value">50%</div>
+    </div>
+
+    <div class="slider-container">
+      <label for="honesty">Honesty</label>
+      <input type="range" id="honesty" min="0" max="100" value="50" oninput="updateValue('honesty')">
+      <div class="value" id="honesty-value">50%</div>
+    </div>
+
+    <div class="slider-container">
+      <label for="sarcasm">Sarcasm</label>
+      <input type="range" id="sarcasm" min="0" max="100" value="50" oninput="updateValue('sarcasm')">
+      <div class="value" id="sarcasm-value">50%</div>
+    </div>
+
+    <button onclick="saveAndGenerate()">Save & Generate Greeting</button>
+
+    <div class="response-box" id="response"></div>
+  </div>
+
+  <script>
+    function updateValue(id) {
+      const val = document.getElementById(id).value;
+      document.getElementById(id + '-value').innerText = `${val}%`;
+    }
+
+    async function saveAndGenerate() {
+      const settings = {
+        empathy: parseInt(document.getElementById('empathy').value),
+        humor: parseInt(document.getElementById('humor').value),
+        honesty: parseInt(document.getElementById('honesty').value),
+        sarcasm: parseInt(document.getElementById('sarcasm').value),
+      };
+
+      // Save settings
+      await fetch('/api/settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(settings),
+      });
+
+      // Get AI response
+      const res = await fetch('/api/dialogue', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(settings),
+      });
+      const data = await res.json();
+
+      // Display response
+      document.getElementById('response').innerText = data.response;
+    }
+  </script>
 </body>
 </html>
