@@ -46,7 +46,7 @@ model = genai.GenerativeModel("gemini-pro")
 # ------------------------------
 @app.route("/")
 def home():
-    return render_template("home.html")
+    return render_template("home.html")  # or whatever your landing page is called
 
 @app.route("/main")
 def main():
