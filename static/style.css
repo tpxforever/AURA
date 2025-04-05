@@ -1,11 +1,16 @@
 @font-face {
   font-family: 'Cabinet';
-  src: url('CabinetGrotesk_Complete/Fonts/OTF/CabinetGrotesk-Black.otf') format('opentype');
+  src: url('Fonts/OTF/CabinetGrotesk-Black.otf') format('opentype');
   font-weight: 400;
   font-display: swap;
   font-style: normal;
 }
 
+h1{
+  font-family: "Cabinet";
+  font-weight: bold;
+  color: white;
+}
 body {
   display: flex;
   justify-content: center; /* Horizontal centering */
@@ -16,11 +21,9 @@ body {
 }
 
 #Logo {
-  font-family: "Cabinet";
-  font-weight: bold;
-  color: white;
   font-size: 7rem;
 }
+
 
 .container {
   text-align: center;
@@ -35,4 +38,14 @@ body {
 /* Optional: Add hover effect */
 .g_id_signin:hover {
   opacity: 0.9;
+}
+
+#login, #Logo{
+  cursor: pointer;
+  animation-timing-function: ease-in-out;
+  animation-delay: 0.5s;
+}
+
+#login:hover, #Logo:hover{
+  color: beige;
 }
