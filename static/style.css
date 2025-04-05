@@ -11,6 +11,7 @@ h1{
   font-weight: bold;
   color: white;
 }
+
 body {
   display: flex;
   justify-content: center; /* Horizontal centering */

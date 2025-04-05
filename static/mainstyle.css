@@ -1,0 +1,32 @@
+@font-face {
+    font-family: 'Cabinet';
+    src: url('Fonts/OTF/CabinetGrotesk-Black.otf') format('opentype');
+    font-weight: 400;
+    font-display: swap;
+    font-style: normal;
+  }
+
+body {
+    display: flex;
+    justify-content: baseline; /* Horizontal centering */
+    align-items:baseline;    /* Vertical centering */
+    height: 100vh;          /* Full viewport height */
+    margin: 0;              /* Remove default margin */
+  }
+
+.bar{
+    display: flex;
+    width: 100vw;
+    height: 10vh;
+    background-color: #1a1919;
+    align-items: center;
+}
+
+#Logo {
+    font-size: 4rem;
+    font-family: "Cabinet";
+    font-weight: bold;
+    color: white;
+    margin: 0;
+    margin-left: 1%;
+  }
