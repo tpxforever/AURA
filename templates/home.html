@@ -7,11 +7,16 @@
     <link rel="stylesheet" href="./static/style.css">
     <!-- Load Google API for OAuth -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script>
+        function goToMain() {
+          window.location.href = "/main"; // Make sure Flask route exists
+        }
+      </script>
 </head>
 <body>
     <div class="container">
         <h1 id="Logo">AURA</h1>
-        <h1 id="login">Login</h1>
+        <h1 id="login" onclick="goToMain()">Login</h1>
     </div>
 </body>
 </html>
