@@ -1,4 +1,4 @@
-# AURA: Personalized Voice Assistant
+# AURA: Adaptive User Robot Assistant
 
 ## Project Overview
 **Project Name**: AURA  
