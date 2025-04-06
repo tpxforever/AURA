@@ -6,27 +6,49 @@
     font-style: normal;
   }
 
-body {
+  body {
+    margin: 0;
+    height: 100vh;
     display: flex;
-    justify-content: baseline; /* Horizontal centering */
-    align-items:baseline;    /* Vertical centering */
-    height: 100vh;          /* Full viewport height */
-    margin: 0;              /* Remove default margin */
-  }
+    flex-direction: column; /* Stacks children vertically */
+    background-color: #f5f5f5; /* Optional: Light background */
+}
 
-.bar{
-    display: flex;
+.bar {
     width: 100vw;
     height: 10vh;
     background-color: #1a1919;
-    align-items: center;
+    display: flex;
+    align-items: center; /* Centers logo vertically */
 }
 
 #Logo {
     font-size: 4rem;
     font-family: "Cabinet";
-    font-weight: bold;
-    color: white;
-    margin: 0;
+    color: #f5f5f5;
     margin-left: 1%;
-  }
+    cursor: pointer;
+}
+
+.create-box {
+    width: 90vw;
+    height: 10vh; /* Adjust as needed */
+    background-color: #1a1919;
+    font-family: "Cabinet";
+    color: #f5f5f5;
+    margin-left: 1%; /* Matches logo’s left margin */
+    /* No need for flex/positioning; flows naturally under .bar */
+    margin-top: 0%;
+    align-self: center;
+    text-align: center;
+    border-radius: 20px;
+    font-size: 4rem;
+    cursor: pointer;
+}
+
+#filler{
+    font-size: 4rem;
+    font-family: "Cabinet";
+    color: #1a1919;
+    margin-left: 6%;
+}
