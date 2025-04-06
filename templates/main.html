@@ -71,12 +71,15 @@
       loadPresetChats();
     };
     
+    function goToProfile() {
+          window.location.href = "/profile"; // Redirect to profile page
+        }
   </script>
 </head>
 <body>
   <div class="bar">
     <h1 id="Logo">AURA</h1>
-    <div class="home-bar-buttons" id="profile">
+    <div class="home-bar-buttons" id="profile" onclick="goToProfile()">
       <span class="material-icons" style="font-size:40px;">person</span>
     </div>
   </div>

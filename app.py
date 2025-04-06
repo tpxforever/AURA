@@ -77,6 +77,10 @@ def assistant():
 def main():
     return render_template("main.html")
 
+@app.route("/profile")
+def profile():
+    return render_template("profile.html")
+
 @app.route("/api/dialogue", methods=["POST"])
 def generate_dialogue():
     config = request.get_json()
