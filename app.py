@@ -2,6 +2,10 @@ import google.generativeai as genai
 from flask_sqlalchemy import SQLAlchemy
 from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
+from gtts import gTTS
+import os
+import tempfile
+import pygame
 
 app = Flask(__name__)
 CORS(app)
@@ -37,7 +41,7 @@ class UserSettings(db.Model):
 # ------------------------------
 # Gemini API Setup
 # ------------------------------
-GEMINI_API_KEY = "AIzaSyClR-zfEQ9m8DkhemP2elrUgJOckSXYX8U" # Replace with your API key
+GEMINI_API_KEY = "AIzaSyClR-zfEQ9m8DkhemP2elrUgJOckSXYX8U"  # Replace with your API key
 genai.configure(api_key=GEMINI_API_KEY)
 
 # Try gemini-1.5-flash, or another valid model.
@@ -46,7 +50,10 @@ try:
 except Exception as e:
     print(f"Error initializing gemini-1.5-flash: {e}")
     print("Trying to find alternative models...")
-    available_models = [model for model in genai.list_models() if 'generateContent' in model.supported_generation_methods]
+    available_models = [
+        model for model in genai.list_models()
+        if 'generateContent' in model.supported_generation_methods
+    ]
     model = None
     if available_models:
         model = genai.GenerativeModel(available_models[0].name)
@@ -86,13 +93,29 @@ def generate_dialogue():
     """
 
     if model:
-      try:
-          response = model.generate_content(prompt)
-          text = response.text.strip()
-      except Exception as e:
-          text = f"[Gemini Error] {str(e)}"
+        try:
+            response = model.generate_content(prompt)
+            text = response.text.strip()
+
+            # Text to speech using gTTS and pygame
+            tts = gTTS(text)
+            temp_file = tempfile.mktemp(".mp3")
+            tts.save(temp_file)
+
+            pygame.mixer.init()
+            pygame.mixer.music.load(temp_file)
+            pygame.mixer.music.play()
+
+            while pygame.mixer.music.get_busy():
+                pygame.time.Clock().tick(10)
+
+            pygame.mixer.quit()
+            os.remove(temp_file)
+
+        except Exception as e:
+            text = f"[Gemini Error] {str(e)}"
     else:
-      text = "Model not available"
+        text = "Model not available"
 
     return jsonify({"response": text})
 
