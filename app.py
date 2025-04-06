@@ -1,10 +1,11 @@
 import google.generativeai as genai
 from flask_sqlalchemy import SQLAlchemy
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template, g
 from flask_cors import CORS
 from gtts import gTTS
 import os
 import tempfile
+import sqlite3
 import pygame
 
 app = Flask(__name__)
@@ -160,6 +161,17 @@ def load_settings():
         return jsonify(settings.to_dict())
     else:
         return jsonify({"error": "No settings found"}), 404
+
+@app.route("/api/preset_chats", methods=["GET"])
+def get_preset_chats():
+    presets= UserSettings.query.all()
+    preset_list = [preset.to_dict() for preset in presets]
+    return jsonify(preset_list)
+
+@app.route("/api/settings/<int:id>", methods=["GET"])
+def get_settings_by_id(id):
+    setting = UserSettings.query.get_or_404(id)
+    return jsonify(setting.to_dict())
 
 # ------------------------------
 # App Entry Point

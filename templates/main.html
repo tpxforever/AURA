@@ -38,8 +38,38 @@
       }
     }
   
-    // Load saved settings when the page is loaded
-    window.onload = loadSavedSettings;
+    // Function to load and display preset chats from the database
+    async function loadPresetChats() {
+      try {
+        const response = await fetch("/api/preset_chats");
+        const presetChats = await response.json();
+        
+        if (Array.isArray(presetChats)) {
+          const container = document.getElementById("preset-chats");
+          presetChats.forEach(chat => {
+            const btn = document.createElement("div");
+            btn.textContent = `Preset Chat: ${chat.name}`;
+            btn.className = "preset-box";
+    
+            // When clicked, navigate to the assistant page with the preset's id as a query parameter
+            btn.onclick = () => {
+              window.location.href = `/assistant?id=${chat.id}`;
+            };
+    
+            container.appendChild(btn);
+          });
+        }
+      } catch (err) {
+        console.error("Failed to load preset chats:", err);
+      }
+    }
+  
+    // Load saved settings and preset chats when the page is loaded
+    window.onload = function() {
+      loadSavedSettings();
+      loadPresetChats();
+    };
+    
   </script>
 </head>
 <body>
@@ -52,7 +82,7 @@
   <div class="create-box" onclick="goToAss()">+</div>
 
   <!-- Section to display previous chat profiles -->
-  <div id="previous-chats">
+  <div id="preset-chats">
     <!-- Previous chat buttons will be dynamically populated here -->
   </div>
 

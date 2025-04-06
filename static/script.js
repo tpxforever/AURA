@@ -3,15 +3,14 @@ let chatHistory = [];
 
 window.addEventListener("DOMContentLoaded", async () => {
     const queryParams = new URLSearchParams(window.location.search);
+    const idFromQuery = queryParams.get("id");  // ✅ extract the id from query string
     const isNew = queryParams.get("new");
-    
+
     if (isNew === "true") {
-        // Fresh default values
         initializeDefaults();
         await createNewSettings();
-    } else {
-        // Load previous settings from DB
-        const settings = await loadSettingsFromDB();
+    } else if (idFromQuery) {
+        const settings = await loadSettingsFromDB(idFromQuery); // ✅ pass the id
         if (settings) {
             applySettingsToUI(settings);
             currentSettingsId = settings.id;
@@ -19,9 +18,9 @@ window.addEventListener("DOMContentLoaded", async () => {
         }
     }
 
-    // Load chat history
     loadChatHistory();
 });
+
 
 function initializeDefaults() {
     document.getElementById("assistant-name").value = "";
@@ -52,9 +51,10 @@ async function createNewSettings() {
     addLiveUpdateListeners(currentSettingsId);
 }
 
-async function loadSettingsFromDB() {
+async function loadSettingsFromDB(id = null) {
     try {
-        const res = await fetch("/api/settings");
+        const url = id ? `/api/settings/${id}` : "/api/settings";
+        const res = await fetch(url);
         const data = await res.json();
         return data;
     } catch (err) {
@@ -63,13 +63,15 @@ async function loadSettingsFromDB() {
     }
 }
 
+
 function applySettingsToUI(settings) {
-    document.getElementById("assistant-name").value = settings.name || "";
-    document.getElementById("empathy-slider").value = settings.empathy || 50;
-    document.getElementById("humor-slider").value = settings.humor || 50;
-    document.getElementById("honesty-slider").value = settings.honesty || 50;
-    document.getElementById("sarcasm-slider").value = settings.sarcasm || 50;
+    document.getElementById("assistant-name").value = settings.name !== undefined ? settings.name : "";
+    document.getElementById("empathy-slider").value = (settings.empathy !== undefined && settings.empathy !== null) ? settings.empathy : 50;
+    document.getElementById("humor-slider").value = (settings.humor !== undefined && settings.humor !== null) ? settings.humor : 50;
+    document.getElementById("honesty-slider").value = (settings.honesty !== undefined && settings.honesty !== null) ? settings.honesty : 50;
+    document.getElementById("sarcasm-slider").value = (settings.sarcasm !== undefined && settings.sarcasm !== null) ? settings.sarcasm : 50;
 }
+
 
 function addLiveUpdateListeners(id) {
     const fields = [
@@ -160,3 +162,34 @@ document.getElementById("send-btn").addEventListener("click", async () => {
         console.error("Error sending message:", err);
     }
 });
+
+async function loadPresetChats() {
+    try {
+      const response = await fetch("/api/preset_chats");
+      const presetChats = await response.json();
+      
+      if (Array.isArray(presetChats)) {
+        const container = document.getElementById("preset-chats");
+        presetChats.forEach(chat => {
+          const btn = document.createElement("div");
+          btn.textContent = `Preset Chat: ${chat.name}`;
+          btn.className = "preset-box";
+          
+
+          btn.onclick = () => {
+            window.location.href = `/assistant?id=${chat.id}`;
+          };
+          
+          container.appendChild(btn);
+        });
+      }
+    } catch (err) {
+      console.error("Failed to load preset chats:", err);
+    }
+  }
+  
+  
+  window.onload = () => {
+    loadPresetChats();
+
+  };
