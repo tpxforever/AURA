@@ -5,44 +5,56 @@
   <title>AI Personality Settings</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='mainstyle.css') }}">
   <script>
+    // Redirect to the default assistant setup
     function goToAss() {
       localStorage.removeItem("savedSettings");
       localStorage.removeItem("chatHistory");
-      window.location.href = "/assistant";
+      window.location.href = "/assistant?new=true";  // Redirect with query to indicate new setup
     }
   
+    // Function to load and display previous assistant settings from DB
     async function loadSavedSettings() {
       try {
         const response = await fetch("/api/settings");
-        const data = await response.json();
+        const settings = await response.json();
+        
+        if (Array.isArray(settings)) {
+          const container = document.getElementById("previous-chats");
+          settings.forEach(setting => {
+            const btn = document.createElement("div");
+            btn.textContent = `Previous Chat: ${setting.name}`;
+            btn.className = "saved-box";
   
-        if (data && !data.error) {
-          const btn = document.createElement("div");
-          btn.textContent = `${data.name}`;
-          btn.className = "saved-box";
+            // When a previous chat is clicked, load settings from DB and navigate to the assistant page
+            btn.onclick = () => {
+              window.location.href = `/assistant?id=${setting.id}`;
+            };
   
-          btn.onclick = () => {
-            localStorage.setItem("savedSettings", JSON.stringify(data));
-            localStorage.setItem("chatHistory", JSON.stringify([])); // Optional: clear or load previous chat
-            window.location.href = "/assistant";
-          };
-  
-          document.body.appendChild(btn);
+            container.appendChild(btn);
+          });
         }
       } catch (err) {
-        console.error("Failed to load settings:", err);
+        console.error("Failed to load saved settings:", err);
       }
     }
   
+    // Load saved settings when the page is loaded
     window.onload = loadSavedSettings;
   </script>
-  
 </head>
 <body>
   <div class="bar">
     <h1 id="Logo">AURA</h1>
   </div>
   <h1 id="filler">Create Your Personal AI Companion</h1>
+
+  <!-- Button to create a new assistant, which redirects to the default assistant setup -->
   <div class="create-box" onclick="goToAss()">+</div>
+
+  <!-- Section to display previous chat profiles -->
+  <div id="previous-chats">
+    <!-- Previous chat buttons will be dynamically populated here -->
+  </div>
+
 </body>
 </html>

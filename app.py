@@ -139,6 +139,20 @@ def save_settings():
 
     return jsonify({"status": "saved", "config": settings.to_dict()})
 
+@app.route("/api/settings/<int:id>", methods=["PUT"])
+def update_setting(id):
+    data = request.get_json()
+    setting = UserSettings.query.get_or_404(id)
+
+    setting.name = data.get("name", setting.name)
+    setting.empathy = data.get("empathy", setting.empathy)
+    setting.humor = data.get("humor", setting.humor)
+    setting.honesty = data.get("honesty", setting.honesty)
+    setting.sarcasm = data.get("sarcasm", setting.sarcasm)
+
+    db.session.commit()
+    return jsonify(setting.to_dict())
+
 @app.route("/api/settings", methods=["GET"])
 def load_settings():
     settings = UserSettings.query.order_by(UserSettings.id.desc()).first()
