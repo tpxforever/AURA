@@ -89,4 +89,12 @@
   .saved-box:hover {
     background-color: #f0f0f0;
   }
+
+  #profile{
+    color: white;
+    justify-content: right;
+    justify-self: right;
+    cursor: pointer;
+    margin-left: 83%;
+  }
   
