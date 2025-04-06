@@ -1,6 +1,16 @@
+@font-face {
+    font-family: 'Cabinet';
+    src: url('Fonts/OTF/CabinetGrotesk-Black.otf') format('opentype');
+    font-weight: 400;
+    font-display: swap;
+    font-style: normal;
+  }
+div{
+    font-family: 'Cabinet';
+}
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #a1c4fd, #c2e9fb);
+    background: #1a1919;
     margin: 0;
     padding: 0;
     display: flex;
@@ -57,7 +67,7 @@ input[type="range"]::-webkit-slider-thumb {
     appearance: none;
     width: 20px;
     height: 20px;
-    background: #007BFF;
+    background: #1a1919;
     border-radius: 50%;
     cursor: pointer;
     border: none;
@@ -75,7 +85,7 @@ textarea {
 button#send-btn {
     width: 100%;
     padding: 12px;
-    background-color: #007BFF;
+    background-color: #1a1919;
     color: white;
     border: none;
     font-size: 16px;
@@ -86,7 +96,7 @@ button#send-btn {
 }
 
 button#send-btn:hover {
-    background-color: #0056b3;
+    background-color: #1a1919;
 }
 
 .chat-window {
@@ -118,7 +128,7 @@ input[type="range"]::-webkit-slider-thumb {
     -webkit-appearance: none;
     height: 20px;
     width: 20px;
-    background: #007BFF;
+    background: #1a1919;
     border-radius: 50%;
     cursor: pointer;
     border: none;
