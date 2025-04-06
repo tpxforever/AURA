@@ -1,3 +1,25 @@
+window.addEventListener("DOMContentLoaded", () => {
+    const savedSettings = localStorage.getItem("savedSettings");
+
+    if (savedSettings) {
+        const settings = JSON.parse(savedSettings);
+        document.getElementById("assistant-name").value = settings.name || "";
+        document.getElementById("empathy-slider").value = settings.empathy || 50;
+        document.getElementById("humor-slider").value = settings.humor || 50;
+        document.getElementById("honesty-slider").value = settings.honesty || 50;
+        document.getElementById("sarcasm-slider").value = settings.sarcasm || 50;
+    }
+
+    // Load chat history
+    const chatHistory = JSON.parse(localStorage.getItem("chatHistory") || "[]");
+    const chatWindow = document.getElementById("chat-window");
+    chatHistory.forEach(({ sender, message }) => {
+        const msgDiv = document.createElement("div");
+        msgDiv.textContent = `${sender}: ${message}`;
+        chatWindow.appendChild(msgDiv);
+    });
+});
+
 document.getElementById("send-btn").addEventListener("click", async () => {
     const name = document.getElementById("assistant-name").value;
     const empathy = document.getElementById("empathy-slider").value;
@@ -8,13 +30,16 @@ document.getElementById("send-btn").addEventListener("click", async () => {
 
     const chatWindow = document.getElementById("chat-window");
 
-    // Add the user's message to the chat window
+    // Append user message
     const userDiv = document.createElement("div");
     userDiv.textContent = `You: ${userMessage}`;
     chatWindow.appendChild(userDiv);
 
+    // Update chat history
+    const chatHistory = JSON.parse(localStorage.getItem("chatHistory") || "[]");
+    chatHistory.push({ sender: "You", message: userMessage });
+
     try {
-        // Send data to the backend
         const response = await fetch("/api/dialogue", {
             method: "POST",
             headers: {
@@ -32,12 +57,15 @@ document.getElementById("send-btn").addEventListener("click", async () => {
 
         const data = await response.json();
 
-        // Add the bot's response to the chat window
         const botDiv = document.createElement("div");
         botDiv.textContent = `${name || "Bot"}: ${data.response}`;
         chatWindow.appendChild(botDiv);
 
-        document.getElementById("user-input").value = ""; // Clear input
+        // Update chat history
+        chatHistory.push({ sender: name || "Bot", message: data.response });
+        localStorage.setItem("chatHistory", JSON.stringify(chatHistory));
+
+        document.getElementById("user-input").value = "";
     } catch (error) {
         console.error("Error:", error);
         const errorDiv = document.createElement("div");

@@ -6,9 +6,37 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='mainstyle.css') }}">
   <script>
     function goToAss() {
-      window.location.href = "/assistant"; // Make sure Flask route exists
+      localStorage.removeItem("savedSettings");
+      localStorage.removeItem("chatHistory");
+      window.location.href = "/assistant";
     }
+  
+    async function loadSavedSettings() {
+      try {
+        const response = await fetch("/api/settings");
+        const data = await response.json();
+  
+        if (data && !data.error) {
+          const btn = document.createElement("div");
+          btn.textContent = `${data.name}`;
+          btn.className = "saved-box";
+  
+          btn.onclick = () => {
+            localStorage.setItem("savedSettings", JSON.stringify(data));
+            localStorage.setItem("chatHistory", JSON.stringify([])); // Optional: clear or load previous chat
+            window.location.href = "/assistant";
+          };
+  
+          document.body.appendChild(btn);
+        }
+      } catch (err) {
+        console.error("Failed to load settings:", err);
+      }
+    }
+  
+    window.onload = loadSavedSettings;
   </script>
+  
 </head>
 <body>
   <div class="bar">

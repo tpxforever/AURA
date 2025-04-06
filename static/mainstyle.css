@@ -52,3 +52,26 @@
     color: #1a1919;
     margin-left: 6%;
 }
+
+.saved-box {
+    width: 100px;
+    height: 100px;
+    background-color: white;
+    border-radius: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    color: black;
+    font-size: 16px;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin: 20px auto;
+    text-align: center;
+    padding: 10px;
+  }
+  .saved-box:hover {
+    background-color: #f0f0f0;
+  }
+  
